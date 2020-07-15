@@ -1,47 +1,26 @@
 package com.yash.test;
 
-class BinaryTree {
-    static class Node {
-        int data;
-        Node left, right;
-        public Node(int item) {
-            data = item;
-            left = right = null;
+import java.io.IOException;
+
+public class MainClass {
+    public static void main ( final String[] args ) throws IOException {
+        int N = 4;
+        int[] a = {1, 2};
+
+        int total = getNumWays(N, a);
+        System.out.println(total);
+    }
+
+    private static int getNumWays(int n, int[] a) {
+        if (n == 0 ) return 1;
+        int [] ways = new int[n+1];
+        ways[0] = 1;
+        for(int i = 1; i <= n; i++ ){
+            int total = 0;
+            for(int j : a )
+                if (i - j >= 0) total += ways[i - j];
+            ways[i] = total;
         }
-    }
-    // Root of the Binary Tree
-    Node root;
-    private static int max = Integer.MIN_VALUE;
-    // This function returns overall maximum path sum in 'res'
-    // And returns max path sum going through root.
-    static int findMaxUtil(Node node) {
-        if (node == null) return 0;
-
-        int l = findMaxUtil(node.left);
-        int r = findMaxUtil(node.right);
-
-        // Max path for parent call of root. This path must include at-most one child of root
-        int max_single = Math.max(Math.max(l, r) + node.data, node.data);
-
-        //  Max Top represents the sum when the Node under consideration is the root of the max sum path and no
-        // ancestors of root are there in max sum path
-        int max_top = Math.max(max_single, l + r + node.data);
-
-        // Store the Maximum Result.
-        max = Math.max(max, max_top);
-        return max_single;
-    }
-
-    /* Driver program to test above functions */
-    public static void main(String args[]) {
-        Node root = new Node(50);
-        root.left = new Node(40);
-        root.left.left = new Node(10);
-        root.left.right = new Node(90);
-        root.left.left.left = new Node(30);
-
-        findMaxUtil(root);
-
-        System.out.println("maximum path sum is : " + max);
+        return ways[n];
     }
 }
