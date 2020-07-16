@@ -39,7 +39,6 @@ class BinaryTree {
         root.left.left = new Node(10);
         root.left.right = new Node(90);
         root.left.left.left = new Node(30);
-
         findMaxUtil(root);
 
         System.out.println("maximum path sum is : " + max);
