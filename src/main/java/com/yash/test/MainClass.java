@@ -1,98 +1,130 @@
 package com.yash.test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainClass {
-    /**
-     * Given an array of n integers in the range 0 to k, process its input,
-     * and then answer query about how many of n integers fall into range [a,b]?
-     * <p>
-     * First line of input contains n (no. of elements) and k (range)
-     * Second line contains n elements
-     * Third line contains q (number of query)
-     * Fourth line contains a, b
-     * <p>
-     * Constraints : n, q <= 10^6, k <= 10^5, 0 <= a <= b <= 10^5 -1
-     * <p>
-     * Testcase #1 :
-     * <p>
-     * Input :
-     * 6 10
-     * 1 0 5 3 2 6
-     * 3 0 0 1 2
-     * 2 5
-     * <p>
-     * Output: 1 2 3
-     */
+
+    static class Node {
+        private String data;
+        private Node parent;
+        private List<Node> children = new ArrayList<>();
+
+        public Node(String name){
+            this.data = name;
+        }
+
+        public Node addChild(Node child) {
+            child.parent = this;
+            this.children.add(child);
+            return child;
+        }
+
+        public void addChildren(List<Node> children) {
+            children.forEach(child -> child.setParent(this));
+            this.children.addAll(children);
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+
+        public Node getParent() {
+            return parent;
+        }
+
+        public void setParent(Node parent) {
+            this.parent = parent;
+        }
+
+        public List<Node> getChildren() {
+            return children;
+        }
+
+    }
+
     public static void main(final String[] args) throws IOException {
-        /*Integer [] arr = {1, 0, 5, 3, 2, 6};
-        int k = 10;
-        Map<Integer, Integer> map =  new HashMap<>();
-        List<Integer> list = Arrays.asList(arr);
-        list.sort(Comparator.naturalOrder());
+        Node tree = createTree();
+        int minItr = 1;
+        int itrs = getTree(tree.children, minItr);
 
-        System.out.println(list);
-        List<Integer> collect = list.stream().filter(x -> x >= 2 && x<=5 ).collect(Collectors.toList());
-        */
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String str = br.readLine();
-        int n = Integer.parseInt(str.split(" ")[0]);
-        int m = Integer.parseInt(str.split(" ")[1]);
-        str = br.readLine();
-        String buf[] = str.split(" ");
-        String buff[] = null;
-        for (int i = 0; i < m; i++) {
-            String[] query = br.readLine().split(" ");
-            String cmd = query[0];
-            int offSet = Integer.parseInt(query[2]);
-            int index = Integer.parseInt(query[1]);
-
-            if (cmd.equals("1")) buff = shiftToFront(index, offSet, buf);
-            if (cmd.equals("2")) buff = shiftToBack(index, offSet, buf);
-        }
-
-        System.out.println(Math.abs(Long.parseLong(buf[0]) - Long.parseLong(buf[buf.length - 1])));
-        System.out.println(String.join(" ", buf));
+        System.out.println(itrs);
     }
 
-    private static String[] shiftToFront(int index, int offSet, String[] buf) {
-        String[] temp = getShitables(index, offSet, buf);
-        int j = offSet - 1; // 4
-        int i = index - 2;
-        while (i >= 0) {
-            buf[j] = buf[i];
-            j--;
-            i--;
-        }
-
-        for (i = 0; i < temp.length; i++) buf[i] = temp[i];
-        return buf;
+    private static int getTree(List<Node> children, int minItr) {
+        if (children.size() == 0) return 0;
+        for (Node node : children) minItr += getTree(node.children, 1);
+        return minItr;
     }
 
-    private static String[] shiftToBack(int index, int offSet, String[] buf) {
-        String[] temp = getShitables(index, offSet, buf);
-        int j = offSet;
-        for (int i = index - 1; i < buf.length && j < buf.length; i++) {
-            buf[i] = buf[j++];
-        }
-        j = temp.length;
-        for (int i = 0; i < temp.length && j < buf.length; i++) {
-            buf[buf.length - j] = temp[i];
-            j--;
-        }
 
-        return buf;
+    private static Node createTree() {
+        Node A = new Node("A");
+        Node B = A.addChild(new Node("B"));
+
+        Node H = B.addChild(new Node("H"));
+        Node I = B.addChild(new Node("I"));
+        Node J = B.addChild(new Node("J"));
+
+        Node C = A.addChild(new Node("C"));
+
+        Node D = A.addChild(new Node("D"));
+
+        Node E = A.addChild(new Node("E"));
+        Node K = E.addChild(new Node("K"));
+        Node P = K.addChild(new Node("P"));
+
+        Node L = E.addChild(new Node("L"));
+        Node O = L.addChild(new Node("O"));
+
+        Node F = A.addChild(new Node("F"));
+
+        Node G = A.addChild(new Node("G"));
+        Node M = G.addChild(new Node("M"));
+
+        return A;
     }
+    /*
+    private static Node createTree() {
+        Node root = new Node("A");
+        Node nodeB = root.addChild(new Node("B"));
+        Node nodeBA = nodeB.addChild(new Node("BA"));
+        Node nodeBB = nodeB.addChild(new Node("BB"));
+        Node nodeBC = nodeB.addChild(new Node("BC"));
+        Node nodeBD = nodeB.addChild(new Node("BD"));
 
-    private static String[] getShitables(int index, int offSet, String[] buf) {
-        String[] temp = new String[offSet - index + 1];
+        Node nodeC = root.addChild(new Node("C"));
+        Node nodeCA = nodeC.addChild(new Node("CA"));
+        Node nodeCB = nodeC.addChild(new Node("CB"));
+        Node nodeCC = nodeC.addChild(new Node("CC"));
+        Node nodeCD = nodeC.addChild(new Node("CD"));
 
-        for (int i = 0; i <= offSet - index; i++) temp[i] = buf[i + index - 1];
-        return temp;
-    }
+        Node nodeD = root.addChild(new Node("D"));
+        Node nodeDA = nodeD.addChild(new Node("DA"));
+        Node nodeDB = nodeD.addChild(new Node("DB"));
 
+        Node nodeDAA = nodeDA.addChild(new Node("DAA"));
+        Node nodeDAB = nodeDA.addChild(new Node("DAB"));
+
+        Node nodeDBA = nodeDB.addChild(new Node("DBA"));
+        Node nodeDBB = nodeDB.addChild(new Node("DBB"));
+        Node nodeE = root.addChild(new Node("E"));
+
+        Node nodeEA = nodeE.addChild(new Node("EA"));
+        Node nodeEB = nodeE.addChild(new Node("EB"));
+
+        Node nodeEAA = nodeEA.addChild(new Node("EAA"));
+        Node nodeEAB = nodeEA.addChild(new Node("EAB"));
+
+        Node nodeEBA = nodeEB.addChild(new Node("EBA"));
+        Node nodeEBB = nodeEB.addChild(new Node("EBB"));
+
+        return root;
+    }*/
 
 }
