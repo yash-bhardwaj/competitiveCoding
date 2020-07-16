@@ -53,7 +53,6 @@ public class MainClass {
             if (cmd.equals("1")) buff = shiftToFront(index, offSet, buf);
             if (cmd.equals("2")) buff = shiftToBack(index, offSet, buf);
         }
-
         System.out.println(Math.abs(Long.parseLong(buf[0]) - Long.parseLong(buf[buf.length - 1])));
         System.out.println(String.join(" ", buf));
     }
