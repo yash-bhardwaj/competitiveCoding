@@ -2,129 +2,88 @@ package com.yash.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MainClass {
 
     static class Node {
-        private String data;
-        private Node parent;
-        private List<Node> children = new ArrayList<>();
+        private int data;
+        Node left;
+        Node right;
 
-        public Node(String name){
-            this.data = name;
-        }
-
-        public Node addChild(Node child) {
-            child.parent = this;
-            this.children.add(child);
-            return child;
-        }
-
-        public void addChildren(List<Node> children) {
-            children.forEach(child -> child.setParent(this));
-            this.children.addAll(children);
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public void setData(String data) {
+        public Node(int data) {
             this.data = data;
         }
-
-        public Node getParent() {
-            return parent;
-        }
-
-        public void setParent(Node parent) {
-            this.parent = parent;
-        }
-
-        public List<Node> getChildren() {
-            return children;
-        }
-
     }
 
     public static void main(final String[] args) throws IOException {
-        Node tree = createTree();
-        int minItr = 1;
-        int itrs = getTree(tree.children, minItr);
+        Node bst = createTree();
+        getTree(bst, "-> ");
 
-        System.out.println(itrs);
+        int depth = maxDepth(bst)+1;
+
+        while(depth > 0) {
+            swapGreater(bst);
+            depth--;
+        }
+        nodes = new ArrayList<>();
+        getTree(bst, "=> ");
     }
 
-    private static int getTree(List<Node> children, int minItr) {
-        if (children.size() == 0) return 0;
-        for (Node node : children) minItr += getTree(node.children, 1);
-        return minItr;
+    public static int maxDepth(Node root) {
+        if(root == null) {
+            return 0;
+        }
+        if(root.left == null && root.right == null){
+            return 1;
+        }
+        else{
+            int l = maxDepth(root.left);
+            int r = maxDepth(root.right);
+            return (1 + Math.max(l,r));
+        }
     }
 
+    private static void swapGreater(Node tree) {
+        int max = tree.data;
+        Node left = tree.left;
+        Node right = tree.right;
+        if (null != left && max < left.data) {
+            tree.data = (left.data);
+            tree.left.data = (max);
+        } else if (null != right && max < right.data) {
+            tree.data = (right.data);
+            tree.right.data = (max);
+        }
+        if (null != left) swapGreater(left);
+        if (null != right) swapGreater(right);
+    }
 
     private static Node createTree() {
-        Node A = new Node("A");
-        Node B = A.addChild(new Node("B"));
-
-        Node H = B.addChild(new Node("H"));
-        Node I = B.addChild(new Node("I"));
-        Node J = B.addChild(new Node("J"));
-
-        Node C = A.addChild(new Node("C"));
-
-        Node D = A.addChild(new Node("D"));
-
-        Node E = A.addChild(new Node("E"));
-        Node K = E.addChild(new Node("K"));
-        Node P = K.addChild(new Node("P"));
-
-        Node L = E.addChild(new Node("L"));
-        Node O = L.addChild(new Node("O"));
-
-        Node F = A.addChild(new Node("F"));
-
-        Node G = A.addChild(new Node("G"));
-        Node M = G.addChild(new Node("M"));
-
+        Node A = new Node(2);
+        A.left = new Node(12);
+        A.right = new Node(42);
+        A.left.left = new Node(22);
+        A.left.right = new Node(1);
+        A.right.left = new Node(82);
+        A.right.right = new Node(91);
+        A.left.left.left = new Node(32);
+        A.left.left.right = new Node(21);
+        A.left.right.left = new Node(3);
+        A.left.right.right = new Node(31);
         return A;
     }
-    /*
-    private static Node createTree() {
-        Node root = new Node("A");
-        Node nodeB = root.addChild(new Node("B"));
-        Node nodeBA = nodeB.addChild(new Node("BA"));
-        Node nodeBB = nodeB.addChild(new Node("BB"));
-        Node nodeBC = nodeB.addChild(new Node("BC"));
-        Node nodeBD = nodeB.addChild(new Node("BD"));
+    private static ArrayList<Node> nodes = new ArrayList<>();
+    private static int getTree(Node node, String appender) {
 
-        Node nodeC = root.addChild(new Node("C"));
-        Node nodeCA = nodeC.addChild(new Node("CA"));
-        Node nodeCB = nodeC.addChild(new Node("CB"));
-        Node nodeCC = nodeC.addChild(new Node("CC"));
-        Node nodeCD = nodeC.addChild(new Node("CD"));
-
-        Node nodeD = root.addChild(new Node("D"));
-        Node nodeDA = nodeD.addChild(new Node("DA"));
-        Node nodeDB = nodeD.addChild(new Node("DB"));
-
-        Node nodeDAA = nodeDA.addChild(new Node("DAA"));
-        Node nodeDAB = nodeDA.addChild(new Node("DAB"));
-
-        Node nodeDBA = nodeDB.addChild(new Node("DBA"));
-        Node nodeDBB = nodeDB.addChild(new Node("DBB"));
-        Node nodeE = root.addChild(new Node("E"));
-
-        Node nodeEA = nodeE.addChild(new Node("EA"));
-        Node nodeEB = nodeE.addChild(new Node("EB"));
-
-        Node nodeEAA = nodeEA.addChild(new Node("EAA"));
-        Node nodeEAB = nodeEA.addChild(new Node("EAB"));
-
-        Node nodeEBA = nodeEB.addChild(new Node("EBA"));
-        Node nodeEBB = nodeEB.addChild(new Node("EBB"));
-
-        return root;
-    }*/
-
+        nodes.add(node);
+        System.out.println(appender + node.data);
+        List<Node> list = new ArrayList<>();
+        if (node.left != null) list.add(node.left);
+        if (node.right != null) list.add(node.right);
+        list.forEach(each ->  getTree(each, appender + appender));
+        return node.data;
+    }
 }
